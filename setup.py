@@ -7,7 +7,7 @@ with open("README.md", 'r') as f:
 
 setuptools.setup(
     name="botwinick_gis",
-    version="0.0.1",
+    version="0.0.2",
     author="Drew Botwinick",
     author_email="foss@drewbotwinick.com",
     description="GIS support package",
@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/dbotwinick/python-botwinick-gis",
     packages=setuptools.find_packages(),
-    install_requires=['numpy', 'pyshp', 'pyproj'],
+    install_requires=['numpy', 'pyshp', 'pyproj', 'botwinick_math'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
