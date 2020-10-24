@@ -77,13 +77,18 @@ def utm2ll(x, y, utm_zone, south=False):
 
     :param x: x/easting UTM (m)
     :param y: y/northing UTM (m)
-    :param utm_zone: utm zone number
-    :param south: boolean, true if south, false for north [default]
-    :return: lat, lon, ((utm_zone, north/south, None), projection_instance)
+    :param utm_zone: utm zone number (or a pyproj CRS)
+    :param south: boolean, true if south, false for north [default] [unused if pyproj CRS provided for utm_zone]
+    :return: lat, lon, projection_instance
     """
-    p = Proj(CRS.from_epsg(get_wgs84_utm_epsg_code(utm_zone, south)))
+    if isinstance(utm_zone, CRS):
+        crs = utm_zone
+    else:
+        crs = CRS.from_epsg(get_wgs84_utm_epsg_code(utm_zone, south))
+
+    p = Proj(crs)
     lon, lat = p(x, y, inverse=True)
-    return lat, lon, ((utm_zone, 'south' if south else 'north', None), p)
+    return lat, lon, p
 
 
 def get_wgs84_utm_epsg_code(*utm_zone):
