@@ -1,12 +1,12 @@
 # author: Drew Botwinick, Botwinick Innovations
 # license: 3-clause BSD
 
-from math import floor, pi
+from math import floor, pi, radians
 from os import path as osp
 
 import numpy as np
 import shapefile as shp
-from botwinick_math.geo.transforms_2d import TransformTSR2D
+from botwinick_math.geo.transforms_2d import TransformTSR2D, rotate_2d
 from pyproj import CRS, Proj, Transformer
 from pyproj.enums import TransformDirection, WktVersion
 
@@ -418,3 +418,28 @@ def utm2model(model, x, y, numpy=True):
     :rtype: tuple[list[float], list[float]]|tuple[array, array]
     """
     return model2utm(model, x, y, inverse=True, numpy=numpy)
+
+
+def gis_ellipse_polygon(origin, a, b, orientation=0.0, complexity=128):
+    """
+    Generate a polygon of an ellipse suitable for GIS applications.
+
+    :param origin: the center of the ellipse (expected to be UTM, m)
+    :param a: the a/semi-major axis length (expected to be UTM, m)
+    :param b: the b/semi-minor axis length (expected to be UTM, m)
+    :param orientation: the rotation/orientation (in degrees) of the ellipse [0.0 means no rotation applied] [rotated about origin]
+    :param complexity: number of data points that make up the polygon [note that result will have length complexity + 1] with
+    the last entry equal to the first entry to ensure compatibility for GIS applications.
+    :return: numpy array containing (complexity+1) points representing the selected ellipse
+
+    """
+    x = origin[0]
+    y = origin[1]
+    result = np.zeros((complexity + 1, 2), dtype=np.float32)
+    angles = np.linspace(0.0, 2.0 * pi, complexity + 1, endpoint=True)
+    result[:, 0] = x + a * np.cos(angles)
+    result[:, 1] = y + b * np.sin(angles)
+    if orientation != 0.0:  # handle rotation
+        result[:, 0], result[:, 1] = rotate_2d(result[:, 0], result[:, 1], orientation, x, y)
+    result[-1] = result[0]  # this should be true anyway, but we make sure they're identical before returning...
+    return result
