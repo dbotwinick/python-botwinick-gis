@@ -7,7 +7,7 @@ with open("README.md", 'r') as f:
 
 setuptools.setup(
     name="botwinick_gis",
-    version="0.0.3",
+    version="0.0.4",
     author="Drew Botwinick",
     author_email="foss@drewbotwinick.com",
     description="GIS support package",
